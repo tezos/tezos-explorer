@@ -1,4 +1,15 @@
-A chain explorer for  tezos.
+A chain explorer for tezos.
 
-For now, it solely consists of a broken, work in progress, sql schema for PostgreSQL.
-The foreign key in particulars probably are in the wrong syntax and need to be looked at.
+For now, it solely consists of a work in progress SQL schema for
+PostgreSQL.
+
+# Test instructions
+
+Here are basic instructions to init a PostgreSQL database and import
+the schema:
+
+
+```
+$ make init
+$ make
+```
