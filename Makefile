@@ -1,24 +1,26 @@
 LOGFILE=postgresql.log
-SOCKDIR=$(shell pwd)
-DBDIR=tezos
-DBNAME=tezos
+PGHOST=$(shell pwd)
+DATADIR=tezos
+PGDATABASE=tezos
+
+.PHONY: all init start stop clean
 
 all:
-	psql -h $(SOCKDIR) -d $(DBNAME) -c '\i schema.sql'
+	dropdb --if-exists -h $(PGHOST) $(PGDATABASE)
+	createdb -h $(PGHOST) $(PGDATABASE) -E UTF8
+	PGHOST=$(PGHOST) PGDATABASE=$(PGDATABASE) psql -c '\i schema.sql'
 
 init:
-	pg_ctl init -D $(DBDIR) -o --no-locale
-	pg_ctl -D $(DBDIR) -l $(LOGFILE) -o "-k $(SOCKDIR)" start
+	initdb -D $(DATADIR) --locale=en_US.UTF8
+	pg_ctl -D $(DATADIR) -l $(LOGFILE) -o "-k $(PGHOST)" start
 	echo "Wait 5 seconds for postgres initialization"
 	sleep 5
-	createdb -h $(SOCKDIR) $(DBNAME)
 
 start:
-	pg_ctl -D $(DBDIR) -l $(LOGFILE) -o "-k $(SOCKDIR)" start
+	pg_ctl -D $(DATADIR) -l $(LOGFILE) -o "-k $(PGHOST)" start
 
 stop:
-	pg_ctl -D $(DBDIR) -o "-k $(SOCKDIR)" stop
+	pg_ctl -D $(DATADIR) -o "-k $(PGHOST)" stop
 
-.PHONY: clean
 clean:
 	rm -rf tezos
